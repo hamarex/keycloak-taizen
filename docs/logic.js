@@ -1,156 +1,150 @@
 (function (root) {
   'use strict';
 
-  var KEY = 'keycloak-taizen.progress.v1';
-  var OX_N = 40, MC_N = 20, OX_PT = 1, MC_PT = 2, EXAM_PASS_RATE = 0.7;
-
-  function gradeOx(q, ans) { return { correct: ans === q.answer }; }
-  function gradeMc(q, ans) { return { correct: ans === q.answer }; }
+  // 進捗スキーマ version 2。
+  //   { version: 2, position, lessonsDone: string[], pagesDone: string[], reports: [{id, memo, ts?}] }
+  // lessonsDone は「全ページ完了したレッスン」の派生キャッシュ。version 1 の lessonsDone / reports / position は引き継ぐ。
+  var KEY = 'keycloak-taizen.progress.v2';
+  var LEGACY_KEY = 'keycloak-taizen.progress.v1';
+  var VERSION = 2;
 
   function emptyProgress() {
-    return {
-      version: 1,
-      position: null,
-      lessonsDone: [],
-      quizResults: {},
-      wrongLog: [],
-      chapterTest: {},
-      reports: [],
-      settings: { passRate: 0.6, unlockAll: false }
-    };
+    return { version: VERSION, position: null, lessonsDone: [], pagesDone: [], reports: [] };
   }
 
   function isObj(x) { return x !== null && typeof x === 'object' && !Array.isArray(x); }
   function isStrArr(x) { return Array.isArray(x) && x.every(function (s) { return typeof s === 'string'; }); }
   function isNum(x) { return typeof x === 'number' && isFinite(x); }
+  function uniq(arr) { return arr.filter(function (s, i) { return arr.indexOf(s) === i; }); }
 
-  // 不正なら理由の文字列、正しければ null
+  function validPosition(pos) {
+    if (pos === null) return true;
+    return isObj(pos) && isNum(pos.ch) && typeof pos.lessonId === 'string' &&
+      (pos.page === undefined || (typeof pos.page === 'number' && isFinite(pos.page) && pos.page >= 0 && Math.floor(pos.page) === pos.page));
+  }
+  function validReports(r) {
+    return Array.isArray(r) && r.every(function (x) { return isObj(x) && typeof x.id === 'string' && typeof x.memo === 'string'; });
+  }
+
+  // 不正なら理由の文字列、正しければ null (version 2 のみ)
   function validate(p) {
     if (!isObj(p)) return '進捗ファイルの形式が正しくありません';
-    if (p.version !== 1) return '対応していないバージョンです';
-    if (p.position !== null && !(isObj(p.position) && isNum(p.position.ch) && typeof p.position.lessonId === 'string' &&
-      (p.position.page === undefined || (typeof p.position.page === 'number' && isFinite(p.position.page) && p.position.page >= 0 && Math.floor(p.position.page) === p.position.page)))) return 'position が不正です';
+    if (p.version !== VERSION) return '対応していないバージョンです';
+    if (p.position === undefined || !validPosition(p.position)) return 'position が不正です';
     if (!isStrArr(p.lessonsDone)) return 'lessonsDone が不正です';
-    if (!isObj(p.quizResults) || !Object.keys(p.quizResults).every(function (k) {
-      var r = p.quizResults[k]; return isObj(r) && typeof r.correct === 'boolean' && isNum(r.ts);
-    })) return 'quizResults が不正です';
-    if (!isStrArr(p.wrongLog)) return 'wrongLog が不正です';
-    if (!isObj(p.chapterTest) || !Object.keys(p.chapterTest).every(function (k) {
-      var r = p.chapterTest[k]; return isObj(r) && isNum(r.score) && typeof r.passed === 'boolean';
-    })) return 'chapterTest が不正です';
-    if (!Array.isArray(p.reports) || !p.reports.every(function (r) {
-      return isObj(r) && typeof r.id === 'string' && typeof r.memo === 'string';
-    })) return 'reports が不正です';
-    if (!isObj(p.settings) || !isNum(p.settings.passRate) || typeof p.settings.unlockAll !== 'boolean') return 'settings が不正です';
+    if (!isStrArr(p.pagesDone)) return 'pagesDone が不正です';
+    if (!validReports(p.reports)) return 'reports が不正です';
     return null;
   }
 
+  // version 1 の進捗を version 2 に変換する。引き継ぐのは position / lessonsDone / reports のみ。
+  // 変換できなければ null。
+  function migrateV1(p) {
+    if (!isObj(p) || p.version !== 1) return null;
+    var pos = p.position === undefined ? null : p.position;
+    if (!validPosition(pos) || !isStrArr(p.lessonsDone) || !validReports(p.reports)) return null;
+    return { version: VERSION, position: pos, lessonsDone: uniq(p.lessonsDone), pagesDone: [], reports: p.reports.slice() };
+  }
+
+  // 保存形式(version 1 or 2)の JSON オブジェクトを version 2 に揃える。{progress, migrated, error}
+  function normalize(p) {
+    if (isObj(p) && p.version === 1) {
+      var m = migrateV1(p);
+      return m ? { progress: m, migrated: true, error: null } : { progress: null, migrated: false, error: 'version 1 の進捗が不正です' };
+    }
+    var err = validate(p);
+    if (err) return { progress: null, migrated: false, error: err };
+    return { progress: p, migrated: false, error: null };
+  }
+
+  function parse(raw) { try { return JSON.parse(raw); } catch (e) { return undefined; } }
+
+  // 戻り値: { progress, ok, migrated }
+  // version 2 のキーが無く version 1 のキーがあれば移行する(version 1 のデータは消さない)。
   function loadProgress(storage) {
-    var raw;
-    try { raw = storage.getItem(KEY); } catch (e) { return { progress: emptyProgress(), ok: false }; }
-    if (raw === null || raw === undefined) return { progress: emptyProgress(), ok: true };
-    try {
-      var p = JSON.parse(raw);
-      if (validate(p) === null) return { progress: p, ok: true };
-    } catch (e) { /* 壊れたJSON */ }
-    return { progress: emptyProgress(), ok: false };
+    var raw, legacy = null;
+    try { raw = storage.getItem(KEY); } catch (e) { return { progress: emptyProgress(), ok: false, migrated: false }; }
+    if (raw === null || raw === undefined) {
+      try { legacy = storage.getItem(LEGACY_KEY); } catch (e) { legacy = null; }
+      if (legacy === null || legacy === undefined) return { progress: emptyProgress(), ok: true, migrated: false };
+      var n1 = normalize(parse(legacy));
+      if (n1.progress) return { progress: n1.progress, ok: true, migrated: true };
+      return { progress: emptyProgress(), ok: false, migrated: false };
+    }
+    var n = normalize(parse(raw));
+    if (n.progress) return { progress: n.progress, ok: true, migrated: n.migrated };
+    return { progress: emptyProgress(), ok: false, migrated: false };
   }
 
   function saveProgress(storage, p) {
     try { storage.setItem(KEY, JSON.stringify(p)); return true; } catch (e) { return false; }
   }
 
+  // 戻り値: { progress, error, migrated }。失敗時は current を返す。
   function importProgress(json, current) {
     var p;
-    try { p = JSON.parse(json); } catch (e) { return { progress: current, error: 'JSONとして読めませんでした' }; }
-    var err = validate(p);
-    if (err) return { progress: current, error: err };
-    return { progress: p, error: null };
+    try { p = JSON.parse(json); } catch (e) { return { progress: current, error: 'JSONとして読めませんでした', migrated: false }; }
+    var n = normalize(p);
+    if (n.error) return { progress: current, error: n.error, migrated: false };
+    return { progress: n.progress, error: null, migrated: n.migrated };
   }
 
-  function isChapterUnlocked(p, no) {
-    if (no <= 1 || p.settings.unlockAll) return true;
-    var t = p.chapterTest[no - 1];
-    return !!(t && t.passed);
+  // ---------- ページ・レッスンの完了 ----------
+  function isPageDone(p, pageId) { return p.pagesDone.indexOf(pageId) >= 0; }
+
+  function lessonStats(p, lesson) {
+    var done = lesson.pages.filter(function (pg) { return isPageDone(p, pg.id); }).length;
+    return { done: done, total: lesson.pages.length };
   }
 
-  function examUnlocked(p, data) {
-    if (p.settings.unlockAll) return true;
-    return data.chapters.every(function (c) { var t = p.chapterTest[c.no]; return !!(t && t.passed); });
+  function isLessonDone(p, lesson) {
+    var s = lessonStats(p, lesson);
+    return s.total > 0 && s.done === s.total;
   }
 
-  // 章ごとの問題数に比例した配分（最大剰余法、各章の問題数が上限）
-  function allocate(sizes, n) {
-    var total = sizes.reduce(function (a, b) { return a + b; }, 0);
-    n = Math.min(n, total);
-    var alloc = sizes.map(function (s) { return total ? Math.min(s, Math.floor(s * n / total)) : 0; });
-    var left = n - alloc.reduce(function (a, b) { return a + b; }, 0);
-    var order = sizes.map(function (s, i) { return i; }).sort(function (a, b) {
-      return (sizes[b] * n / total - alloc[b]) - (sizes[a] * n / total - alloc[a]);
+  // 全レッスンについて lessonsDone を「全ページ完了」から再計算した新しい進捗を返す。
+  // expandLegacy=true なら、lessonsDone に載っていたレッスンの全ページを完了扱いにしてから再計算する(version 1 からの移行時に1回だけ使う)。
+  function syncLessons(p, data, expandLegacy) {
+    var pages = p.pagesDone.slice();
+    if (expandLegacy) {
+      data.chapters.forEach(function (c) {
+        c.lessons.forEach(function (l) {
+          if (p.lessonsDone.indexOf(l.id) >= 0) l.pages.forEach(function (pg) { if (pages.indexOf(pg.id) < 0) pages.push(pg.id); });
+        });
+      });
+    }
+    var base = Object.assign({}, p, { pagesDone: pages });
+    var lessons = [];
+    data.chapters.forEach(function (c) {
+      c.lessons.forEach(function (l) { if (isLessonDone(base, l)) lessons.push(l.id); });
     });
-    while (left > 0) {
-      var moved = false;
-      for (var k = 0; k < order.length && left > 0; k++) {
-        var i = order[k];
-        if (alloc[i] < sizes[i]) { alloc[i]++; left--; moved = true; }
-      }
-      if (!moved) break;
-    }
-    return alloc;
+    return Object.assign({}, base, { lessonsDone: lessons });
   }
 
-  function sample(arr, k, rng) {
-    var a = arr.slice();
-    for (var i = a.length - 1; i > 0; i--) {
-      var j = Math.floor(rng() * (i + 1));
-      var t = a[i]; a[i] = a[j]; a[j] = t;
-    }
-    return a.slice(0, k);
+  // ページの完了を切り替えた新しい進捗を返す(レッスン完了も再計算)。
+  function markPage(p, data, pageId, done) {
+    var has = isPageDone(p, pageId);
+    if (done === has) return syncLessons(p, data, false);
+    var pages = done ? p.pagesDone.concat([pageId]) : p.pagesDone.filter(function (id) { return id !== pageId; });
+    return syncLessons(Object.assign({}, p, { pagesDone: pages }), data, false);
   }
 
-  function pick(chapters, field, n, rng) {
-    var alloc = allocate(chapters.map(function (c) { return c[field].length; }), n);
-    var out = [];
-    chapters.forEach(function (c, i) { out = out.concat(sample(c[field], alloc[i], rng)); });
-    return sample(out, out.length, rng);
-  }
+  function setPosition(p, position) { return Object.assign({}, p, { position: position }); }
 
-  function buildExam(data, rng) {
-    rng = rng || Math.random;
-    return { ox: pick(data.chapters, 'ox', OX_N, rng), mc: pick(data.chapters, 'mc', MC_N, rng) };
+  function addReport(p, id, memo, ts) {
+    return Object.assign({}, p, { reports: p.reports.concat([{ id: id, memo: memo, ts: ts === undefined ? Date.now() : ts }]) });
   }
-
-  function chapterOf(id) {
-    var m = /^c(\d+)-/.exec(id);
-    return m ? parseInt(m[1], 10) : 0;
-  }
-
-  // answers: { [問題ID]: boolean(○×) | number(五肢の選択) }。キーが無い問題は未回答で0点。
-  function scoreExam(exam, answers) {
-    answers = answers || {};
-    var points = 0, byChapter = {};
-    function one(q, pt, grade) {
-      var ch = chapterOf(q.id);
-      var b = byChapter[ch] || (byChapter[ch] = { correct: 0, total: 0 });
-      b.total++;
-      if (Object.prototype.hasOwnProperty.call(answers, q.id) && answers[q.id] !== null && answers[q.id] !== undefined &&
-          grade(q, answers[q.id]).correct) {
-        b.correct++; points += pt;
-      }
-    }
-    exam.ox.forEach(function (q) { one(q, OX_PT, gradeOx); });
-    exam.mc.forEach(function (q) { one(q, MC_PT, gradeMc); });
-    var max = exam.ox.length * OX_PT + exam.mc.length * MC_PT;
-    return { points: points, max: max, pass: max > 0 && points / max >= EXAM_PASS_RATE, byChapter: byChapter };
+  function removeReport(p, index) {
+    return Object.assign({}, p, { reports: p.reports.filter(function (r, i) { return i !== index; }) });
   }
 
   var api = {
-    STORAGE_KEY: KEY,
-    OX_N: OX_N, MC_N: MC_N, OX_PT: OX_PT, MC_PT: MC_PT, EXAM_PASS_RATE: EXAM_PASS_RATE,
-    gradeOx: gradeOx, gradeMc: gradeMc,
-    emptyProgress: emptyProgress, loadProgress: loadProgress, saveProgress: saveProgress, importProgress: importProgress,
-    isChapterUnlocked: isChapterUnlocked, examUnlocked: examUnlocked,
-    buildExam: buildExam, scoreExam: scoreExam
+    STORAGE_KEY: KEY, LEGACY_STORAGE_KEY: LEGACY_KEY, VERSION: VERSION,
+    emptyProgress: emptyProgress, validate: validate, migrateV1: migrateV1,
+    loadProgress: loadProgress, saveProgress: saveProgress, importProgress: importProgress,
+    isPageDone: isPageDone, lessonStats: lessonStats, isLessonDone: isLessonDone,
+    syncLessons: syncLessons, markPage: markPage, setPosition: setPosition,
+    addReport: addReport, removeReport: removeReport
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.Logic = api;

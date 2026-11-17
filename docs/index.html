@@ -5,38 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Keycloak 大全集 学習アプリ</title>
 <style>
-:root { --bg:#f6f7f9; --card:#fff; --fg:#1f2430; --mute:#667; --line:#dde1e8; --pri:#2557c9; --ok:#1a7f45; --ng:#c0262d; --key:#d4141c; --trap:#d96a00; }
+:root { --bg:#fff; --card:#fff; --fg:#222; --mute:#666; --line:#e2e2e2; --pri:#1f4f99; --ok:#222; --ng:#b3261e; --soft:#f5f5f5; }
 * { box-sizing: border-box; }
-body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.8 -apple-system,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif; }
+body { margin:0; background:#fff; color:var(--fg); font:17px/1.8 -apple-system,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif; }
 #app { max-width:860px; margin:0 auto; padding:16px; }
-h1 { font-size:1.4rem; margin:.2em 0 .6em; } h2 { font-size:1.2rem; margin:1em 0 .4em; } h3 { font-size:1.08rem; margin:1em 0 .3em; } h4 { font-size:1.02rem; margin:.9em 0 .2em; border-left:4px solid var(--pri); padding-left:.5em; }
-.card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 18px; margin:12px 0; }
-.warn { background:#fff3cd; border:1px solid #e0b100; color:#5b4400; padding:10px 14px; border-radius:8px; margin:8px 0; }
+h1 { font-size:1.4rem; margin:.2em 0 .6em; } h2 { font-size:1.2rem; margin:1em 0 .4em; } h3 { font-size:1.08rem; margin:1em 0 .3em; } h4 { font-size:1rem; margin:.9em 0 .2em; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:6px; padding:14px 18px; margin:12px 0; }
+.warn { background:var(--soft); border:1px solid var(--line); border-left:3px solid var(--ng); color:var(--fg); padding:10px 14px; border-radius:4px; margin:8px 0; }
 .ok { color:var(--ok); } .ng { color:var(--ng); } .mute { color:var(--mute); font-size:.9rem; }
-button { font:inherit; padding:.5em 1.1em; border:1px solid var(--pri); background:var(--pri); color:#fff; border-radius:8px; cursor:pointer; margin:4px 6px 4px 0; }
+button { font:inherit; padding:.5em 1.1em; border:1px solid var(--pri); background:var(--pri); color:#fff; border-radius:6px; cursor:pointer; margin:4px 6px 4px 0; }
 button.sub { background:#fff; color:var(--pri); } button.small { font-size:.85rem; padding:.2em .7em; }
 button:disabled { opacity:.45; cursor:default; }
-button.sel { outline:3px solid #f0b400; }
+button.sel { outline:2px solid var(--fg); }
 .row { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
-.bar { height:12px; background:#e5e8ee; border-radius:6px; overflow:hidden; } .bar > div { height:100%; background:var(--pri); }
+.bar { height:8px; background:#eee; border-radius:4px; overflow:hidden; } .bar > div { height:100%; background:var(--pri); }
 .chap { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; border-top:1px solid var(--line); padding:8px 0; } .chap:first-child { border-top:0; }
-.tag { font-size:.8rem; padding:1px 8px; border-radius:10px; border:1px solid var(--line); margin-left:6px; }
+.tag { font-size:.8rem; padding:1px 8px; border-radius:6px; border:1px solid var(--line); margin-left:6px; }
 .tag.done { color:var(--ok); border-color:var(--ok); } .tag.prog { color:var(--pri); border-color:var(--pri); } .tag.lock { color:var(--mute); }
-.pbar { height:4px; background:#e5e8ee; border-radius:2px; overflow:hidden; margin:4px 0 8px; } .pbar > div { height:100%; background:var(--pri); }
+.pbar { height:3px; background:#eee; border-radius:2px; overflow:hidden; margin:4px 0 8px; } .pbar > div { height:100%; background:var(--pri); }
 .nav { display:flex; gap:8px; margin:12px 0; } .nav button { flex:1; margin:0; padding:.7em 1em; }
 details { margin:8px 0; } summary { cursor:pointer; }
 .lesson { overflow-wrap:anywhere; } .lesson table { border-collapse:collapse; display:block; overflow-x:auto; } .lesson td, .lesson th { border:1px solid var(--line); padding:3px 8px; }
-b.key { color:var(--key); font-weight:800; }
-.trap { color:var(--trap); font-weight:700; background:#fff4e5; padding:0 3px; border-radius:3px; }
-.q { font-size:1.05rem; } .items p { margin:.2em 0; }
-.choice { display:block; width:100%; text-align:left; background:#fff; color:var(--fg); border:1px solid var(--line); }
-.choice.right { background:#e4f6ea; border-color:var(--ok); } .choice.wrong { background:#fde8e9; border-color:var(--ng); }
-.explain { background:#f3f6fc; border-radius:8px; padding:8px 14px; margin-top:8px; }
-.lesson pre { background:#f3f4f7; border:1px solid var(--line); border-radius:6px; padding:8px 12px; overflow-x:auto; white-space:pre; overflow-wrap:normal; font:0.82rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
-.lesson code, .explain code, .q code, .items code { background:#f0f2f6; border-radius:4px; padding:0 4px; font:0.9em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; overflow-wrap:anywhere; }
+
+
+.lesson pre { background:var(--soft); border:1px solid var(--line); border-radius:6px; padding:8px 12px; overflow-x:auto; white-space:pre; overflow-wrap:normal; font:0.82rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.lesson code { background:var(--soft); border-radius:4px; padding:0 4px; font:0.9em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; overflow-wrap:anywhere; }
 .lesson pre code { background:none; padding:0; }
-.lesson th { background:#f3f6fc; }
+.lesson th { background:var(--soft); }
 .lesson p { margin:.4em 0; }
+
+/* ハンズオン本文: goal / step / check / read */
+.lesson .goal { margin:.2em 0 .8em; padding:.4em .8em; background:var(--soft); border-left:3px solid #bbb; }
+.lesson .step { margin:1.4em 0 0; padding-top:.8em; border-top:1px solid var(--line); }
+.lesson .step h4 { margin:0 0 .3em; font-size:1rem; font-weight:700; }
+.lesson .check, .lesson .read { margin:.5em 0; }
+.lesson .check > b, .lesson .read > b { display:block; font-size:.8rem; font-weight:400; color:var(--mute); }
+.lesson .read p, .lesson .read ul { margin:.2em 0; }
+.lesson pre.out { background:var(--soft); border-color:transparent; margin:.3em 0; }
+b.key { font-weight:700; }
+.trap { font-weight:700; background:var(--soft); padding:0 3px; border-radius:3px; }
+
+
+
+
+.lesson ol { padding-left:1.6em; } .lesson ol > li { margin:.35em 0; padding-left:.2em; } .lesson ul { padding-left:1.3em; }
+.prewrap { position:relative; margin:.6em 0; }
+.prewrap pre { margin:0; padding-top:30px; }
+.prewrap .copy { position:absolute; top:4px; right:6px; margin:0; font-size:.7rem; padding:0 .6em; background:#fff; color:var(--mute); border-color:var(--line); border-radius:4px; }
+.prewrap .copy.copied { color:var(--fg); border-color:var(--fg); }
+.tried { display:flex; align-items:center; gap:10px; flex-wrap:wrap; border:1px solid var(--line); border-radius:6px; padding:10px 14px; background:#fff; }
+.tried.on { border-color:var(--fg); background:var(--soft); }
+.tried button { margin:0; }
+.labcard table { border-collapse:collapse; width:100%; font-size:.92rem; } .labcard td, .labcard th { border:1px solid var(--line); padding:3px 8px; text-align:left; vertical-align:top; overflow-wrap:anywhere; }
+.labcard th { background:var(--soft); white-space:nowrap; }
+.labcard pre { background:var(--soft); border:1px solid var(--line); border-radius:6px; padding:8px 12px; overflow-x:auto; font:0.82rem/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; margin:.4em 0; }
+.labcard code { background:var(--soft); border-radius:4px; padding:0 4px; font:0.9em ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
 </style>
 </head>
 <body>
@@ -47,148 +70,134 @@ b.key { color:var(--key); font-weight:800; }
 (function () {
   'use strict';
   var L = window.Logic, DATA = window.DATA;
-  var OX_N = L.OX_N || 40, MC_N = L.MC_N || 20, OX_PT = L.OX_PT || 1, MC_PT = L.MC_PT || 2;
-  var EXAM_PASS_RATE = typeof L.EXAM_PASS_RATE === 'number' ? L.EXAM_PASS_RATE : 0.7;
-  function examPassPct() { return Math.round(EXAM_PASS_RATE * 100); }
   var root = document.getElementById('app');
   var P, storageOk = true, storage = null, saveFailed = false, notice = '';
   var view = { name: 'home' };
-  var sessionPages = 0; // この起動中に「次へ」で進めたページ数（クイズ回答は含めない）
+  var sessionPages = 0; // この起動中に「次へ」で進めたページ数
 
   // ---------- 保存 ----------
   try { storage = window.localStorage; } catch (e) { storage = null; }
+  var migrated = false;
   if (storage) {
-    var r = L.loadProgress(storage); P = r.progress; storageOk = r.ok;
+    var r = L.loadProgress(storage); P = r.progress; storageOk = r.ok; migrated = !!r.migrated;
   } else { P = L.emptyProgress(); storageOk = false; }
   function save() {
     if (!storage || !L.saveProgress(storage, P)) saveFailed = true;
   }
 
   // ---------- データ索引 ----------
-  var qById = {}, lessonById = {}, chapterOfLesson = {};
+  var lessonById = {}, chapterOfLesson = {}, pageIndex = {};
   DATA.chapters.forEach(function (c) {
-    c.lessons.forEach(function (l) { lessonById[l.id] = l; chapterOfLesson[l.id] = c; });
-    c.ox.forEach(function (q) { qById[q.id] = { kind: 'ox', q: q }; });
-    c.mc.forEach(function (q) { qById[q.id] = { kind: 'mc', q: q }; });
+    c.lessons.forEach(function (l) {
+      lessonById[l.id] = l; chapterOfLesson[l.id] = c;
+      l.pages.forEach(function (pg) { pageIndex[pg.id] = { lesson: l, chapter: c }; });
+    });
   });
+  // 旧バージョンからの移行時は、完了済みレッスンの全ページを「試した」扱いにする
+  P = L.syncLessons(P, DATA, migrated);
+  if (migrated) save();
+
   function chapter(no) { return DATA.chapters.filter(function (c) { return c.no === no; })[0]; }
-  function lessonQs(c, l) { return c.ox.filter(function (q) { return q.lesson === l.id; }); }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]; }); }
   function isDone(id) { return P.lessonsDone.indexOf(id) >= 0; }
-  function chapterDone(c) { return c.lessons.every(function (l) { return isDone(l.id); }); }
   function firstUndone(c) { return c.lessons.filter(function (l) { return !isDone(l.id); })[0] || null; }
-  function totalLessons() { return DATA.chapters.reduce(function (n, c) { return n + c.lessons.length; }, 0); }
-  function doneLessons() { return DATA.chapters.reduce(function (n, c) { return n + c.lessons.filter(function (l) { return isDone(l.id); }).length; }, 0); }
-  function go(v) { view = v; render(); window.scrollTo(0, 0); }
-
-  function recordAnswer(id, correct) {
-    P.quizResults[id] = { correct: correct, ts: Date.now() };
-    var i = P.wrongLog.indexOf(id);
-    if (!correct && i < 0) P.wrongLog.push(id);
-    if (correct && i >= 0) P.wrongLog.splice(i, 1);
+  function firstUndonePage(l) {
+    for (var i = 0; i < l.pages.length; i++) if (!L.isPageDone(P, l.pages[i].id)) return i;
+    return 0;
   }
-  function reportBtn(id) { return '<button class="small sub" data-act="report" data-id="' + esc(id) + '">間違いをメモ</button>'; }
-
-  // ---------- 共通：1問ずつ即採点するランナー ----------
-  // run = { ids:[問題ID], i, picked, title, onDone(summary), back }
-  function startRun(ids, opts) {
-    var items = ids.map(function (id) { return qById[id]; }).filter(Boolean);
-    go({ name: 'run', items: items, i: 0, picked: null, right: 0, opts: opts });
-  }
-  function renderQ(q, kind, picked, showResult) {
-    var h = '<div class="q">' + (kind === 'ox' ? q.text : q.stem) + '</div>';
-    if (kind === 'mc') {
-      h += '<div class="items">' + q.items.map(function (it) { return '<p>' + esc(it.label) + '　' + it.text + '</p>'; }).join('') + '</div>';
-      h += q.choices.map(function (c, k) {
-        var cls = 'choice';
-        if (showResult) { if (k + 1 === q.answer) cls += ' right'; else if (picked === k + 1) cls += ' wrong'; }
-        else if (picked === k + 1) cls += ' sel';
-        return '<button class="' + cls + '" data-act="pick" data-v="' + (k + 1) + '"' + (showResult ? ' disabled' : '') + '>' + (k + 1) + '. ' + esc(c) + '</button>';
-      }).join('');
-    } else {
-      [[true, '○'], [false, '×']].forEach(function (p) {
-        var cls = 'choice';
-        if (showResult) { if (p[0] === q.answer) cls += ' right'; else if (picked === p[0]) cls += ' wrong'; }
-        else if (picked === p[0]) cls += ' sel';
-        h += '<button class="' + cls + '" data-act="pick" data-v="' + p[0] + '" style="width:48%;text-align:center;font-size:1.3rem"' + (showResult ? ' disabled' : '') + '>' + p[1] + '</button>';
+  function countAll() {
+    var t = { lessons: 0, lessonsDone: 0, pages: 0, pagesDone: 0 };
+    DATA.chapters.forEach(function (c) {
+      c.lessons.forEach(function (l) {
+        var s = L.lessonStats(P, l);
+        t.lessons++; if (isDone(l.id)) t.lessonsDone++;
+        t.pages += s.total; t.pagesDone += s.done;
       });
+    });
+    return t;
+  }
+  function go(v) { view = v; render(); window.scrollTo(0, 0); }
+  function reportBtn(id) { return '<button class="small sub" data-act="report" data-id="' + esc(id) + '">記述の間違いをメモ</button>'; }
+
+  // ---------- 本文の装飾（pre のコピーボタン。pre.out は対象外） ----------
+  function decorate(html) {
+    return html
+      .replace(/<pre>/g, '<div class="prewrap"><button class="small sub copy" data-act="copy" type="button">コピー</button><pre>')
+      .replace(/<\/pre>/g, '</pre></div>')
+      .replace(/<pre class="out">([\s\S]*?)<\/pre><\/div>/g, '<pre class="out">$1</pre>');
+  }
+  function copyText(text, btn) {
+    function done(ok) {
+      if (!btn) return;
+      btn.textContent = ok ? 'コピーしました' : 'コピーできません';
+      btn.classList.toggle('copied', ok);
+      setTimeout(function () { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 1500);
     }
-    return h;
-  }
-  function explainHtml(q, kind) {
-    if (kind === 'ox') return q.explain ? '<p>' + q.explain + '</p>' : '';
-    return (q.explain || []).map(function (e) { return '<p>' + e + '</p>'; }).join('') + (q.tip ? '<p><b>コツ:</b> ' + q.tip + '</p>' : '');
-  }
-  function renderRun() {
-    var v = view, o = v.opts;
-    if (!v.items.length) return '<div class="card">問題がありません。</div><button data-act="run-finish">戻る</button>';
-    var it = v.items[v.i], q = it.q, answered = v.picked !== null && v.picked !== undefined;
-    var h = '<h1>' + esc(o.title) + '</h1><div class="mute">' + (v.i + 1) + ' / ' + v.items.length + '</div><div class="card">';
-    h += renderQ(q, it.kind, v.picked, answered);
-    if (answered) {
-      var ok = it.kind === 'ox' ? L.gradeOx(q, v.picked).correct : L.gradeMc(q, v.picked).correct;
-      h += '<h3 class="' + (ok ? 'ok' : 'ng') + '">' + (ok ? '正解' : '不正解') + '（正解: ' + (it.kind === 'ox' ? (q.answer ? '○' : '×') : q.answer + '. ' + esc(q.choices[q.answer - 1])) + '）</h3>';
-      h += '<div class="explain">' + explainHtml(q, it.kind) + '</div>';
-      h += '<p>' + reportBtn(q.id) + '</p>';
-      h += '<button data-act="run-next">' + (v.i + 1 < v.items.length ? '次の問題へ' : '結果を見る') + '</button>';
+    function fallback() {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        var ok = document.execCommand('copy'); ta.remove(); done(ok);
+      } catch (e) { done(false); }
     }
-    return h + '</div><button class="sub" data-act="run-quit">中断してホームへ</button>';
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+    else fallback();
   }
-  function runPick(val) {
-    var v = view; if (v.picked !== null && v.picked !== undefined) return;
-    if (val === 'true') val = true; else if (val === 'false') val = false; else val = parseInt(val, 10);
-    var it = v.items[v.i];
-    var ok = it.kind === 'ox' ? L.gradeOx(it.q, val).correct : L.gradeMc(it.q, val).correct;
-    v.picked = val; if (ok) v.right++;
-    recordAnswer(it.q.id, ok); save(); render();
-  }
-  function runNext() {
-    var v = view;
-    if (v.i + 1 < v.items.length) { v.i++; v.picked = null; render(); window.scrollTo(0, 0); }
-    else v.opts.onDone({ right: v.right, total: v.items.length });
+
+  // ---------- ハンズオン環境カード ----------
+  function copyPre(text) { return '<div class="prewrap"><button class="small sub copy" data-act="copy" type="button">コピー</button><pre>' + text + '</pre></div>'; }
+  function labCard() {
+    return '<div class="card labcard"><h2>ハンズオン環境</h2>' +
+      '<p>環境は用意されていません。<b>第1章で自分で作ります</b>（<code>~/develop/kc-handson/</code> に <code>docker-compose.yml</code> を書き、Keycloak を起動）。アプリ（<code>spa/</code> <code>web/</code> <code>api/</code>）も本文の手順で自分で書きます。</p>' +
+      '<p><b>前提ソフト</b>: Docker（Docker Compose）、<code>curl</code>、<code>jq</code>、Node.js 20 以上、<code>python3</code></p>' +
+      '<h3>第1章のあとの起動・停止・やり直し</h3>' +
+      copyPre('cd ~/develop/kc-handson\ndocker compose up -d      # 起動\ndocker compose down        # 停止（データは残る）\ndocker compose down -v     # 停止してデータも消す（やり直し）') +
+      '<p class="mute">データを消した場合は、realm や client は本文の手順で作り直します。</p>' +
+      '<h3>URL 早見表（学習が進むと使います）</h3>' +
+      '<table><thead><tr><th>サービス</th><th>URL</th><th>メモ</th></tr></thead><tbody>' +
+      '<tr><td>Keycloak</td><td><code>http://localhost:8080</code></td><td>管理コンソールは英語 UI。realm は <code>demo</code></td></tr>' +
+      '<tr><td>Mailpit</td><td><code>http://localhost:8025</code></td><td>第11章で追加。Keycloak のメール受信箱</td></tr>' +
+      '<tr><td>OpenLDAP</td><td><code>ldap://localhost:389</code></td><td>第13章で追加。Keycloak からは <code>ldap://openldap:389</code></td></tr>' +
+      '<tr><td>自作 SPA</td><td><code>http://localhost:3000</code></td><td><code>python3 -m http.server 3000</code></td></tr>' +
+      '<tr><td>自作 Web アプリ</td><td><code>http://localhost:3001</code></td><td><code>node server.js</code></td></tr>' +
+      '<tr><td>自作 API</td><td><code>http://localhost:4000</code></td><td><code>node server.js</code></td></tr>' +
+      '</tbody></table>' +
+      '<p class="mute">URL は必ず <code>localhost</code> を使ってください（<code>127.0.0.1</code> だとトークンの <code>iss</code> が変わります）。</p></div>';
   }
 
   // ---------- ホーム ----------
   function homeView() {
-    var tot = totalLessons(), dn = doneLessons();
+    var t = countAll();
     var h = '<h1>Keycloak 大全集 学習アプリ</h1>';
-    h += '<div class="card"><div class="row"><b>全体の進捗</b><span class="mute">レッスン ' + dn + ' / ' + tot + '</span></div>';
-    h += '<div class="bar"><div style="width:' + (tot ? Math.round(dn * 100 / tot) : 0) + '%"></div></div>';
+    h += '<div class="card"><div class="row"><b>全体の進捗</b><span class="mute">レッスン ' + t.lessonsDone + ' / ' + t.lessons + '　ページ ' + t.pagesDone + ' / ' + t.pages + '</span></div>';
+    h += '<div class="bar"><div style="width:' + (t.pages ? Math.round(t.pagesDone * 100 / t.pages) : 0) + '%"></div></div>';
     var cont = continueTarget();
     if (cont) h += '<p><button data-act="continue">続きから（' + esc(cont.label) + '）</button></p>';
-    else h += '<p class="mute">続きから進めるレッスンはありません（全章の学習が完了、またはロック中）。</p>';
-    h += '</div><div class="card"><h2>章一覧</h2>';
+    else h += '<p class="mute">続きから進めるレッスンはありません（全章の学習が完了）。</p>';
+    h += '</div>' + labCard();
+    h += '<div class="card"><h2>章一覧</h2>';
     DATA.chapters.forEach(function (c) {
-      var unlocked = L.isChapterUnlocked(P, c.no), done = c.lessons.filter(function (l) { return isDone(l.id); }).length;
-      var t = P.chapterTest[c.no];
-      var tag = !unlocked ? '<span class="tag lock">ロック</span>' : (t && t.passed ? '<span class="tag done">完了</span>' : (done > 0 || (P.position && P.position.ch === c.no) ? '<span class="tag prog">進行中</span>' : ''));
-      h += '<div class="chap"><div>第' + c.no + '章 ' + esc(c.title) + tag + '<div class="mute">レッスン ' + done + '/' + c.lessons.length + (t ? '　章末テスト ' + Math.round(t.score * 100) + '%' + (t.passed ? '（クリア）' : '（もう一歩）') : '') + '</div></div>';
-      h += '<div>';
-      if (unlocked) {
-        h += '<button data-act="chapter-start" data-ch="' + c.no + '">' + (done ? '学習する' : '始める') + '</button>';
-        h += '<button class="sub" data-act="chapter-test" data-ch="' + c.no + '"' + (c.mc.length ? '' : ' disabled') + '>章末テスト</button>';
-      } else h += '<span class="mute">前の章の章末テストをクリアすると開きます</span>';
-      h += '</div></div>';
+      var done = c.lessons.filter(function (l) { return isDone(l.id); }).length;
+      var started = c.lessons.some(function (l) { return L.lessonStats(P, l).done > 0; }) || (P.position && P.position.ch === c.no);
+      var tag = done === c.lessons.length ? '<span class="tag done">完了</span>' : (started ? '<span class="tag prog">進行中</span>' : '');
+      h += '<div class="chap"><div>第' + c.no + '章 ' + esc(c.title) + tag + '<div class="mute">レッスン ' + done + '/' + c.lessons.length + '</div></div>';
+      h += '<div><button data-act="chapter-start" data-ch="' + c.no + '">' + (done || started ? '学習する' : '始める') + '</button></div></div>';
     });
     h += '</div><div class="card"><h2>その他</h2><div class="row">';
-    var eu = L.examUnlocked(P, DATA);
-    h += '<button data-act="exam"' + (eu ? '' : ' disabled') + '>総合理解チェック</button>' + (eu ? '' : '<span class="mute">全章の章末テストをクリアすると開きます</span>');
-    h += '</div><div class="row"><button class="sub" data-act="review">復習（間違えた問題 ' + P.wrongLog.filter(function (id) { return qById[id]; }).length + ' 問）</button>';
     h += '<button class="sub" data-act="reports">間違いメモ（' + P.reports.length + '件）</button>';
     h += '<button class="sub" data-act="settings">設定</button></div></div>';
     return h;
   }
   function continueTarget() {
     var pos = P.position;
-    if (pos && lessonById[pos.lessonId] && L.isChapterUnlocked(P, pos.ch)) {
-      var c = chapterOfLesson[pos.lessonId];
-      if (!isDone(pos.lessonId)) { var pi = pageIdx(lessonById[pos.lessonId], pos.page || 0); return { id: pos.lessonId, page: pi, label: '第' + c.no + '章 ' + lessonById[pos.lessonId].title + ' ページ' + (pi + 1) }; }
+    if (pos && lessonById[pos.lessonId] && !isDone(pos.lessonId)) {
+      var c = chapterOfLesson[pos.lessonId], pi = pageIdx(lessonById[pos.lessonId], pos.page || 0);
+      return { id: pos.lessonId, page: pi, label: '第' + c.no + '章 ' + lessonById[pos.lessonId].title + ' ページ' + (pi + 1) };
     }
     for (var i = 0; i < DATA.chapters.length; i++) {
-      var ch = DATA.chapters[i];
-      if (!L.isChapterUnlocked(P, ch.no)) continue;
-      var u = firstUndone(ch);
-      if (u) return { id: u.id, page: 0, label: '第' + ch.no + '章 ' + u.title };
+      var ch = DATA.chapters[i], u = firstUndone(ch);
+      if (u) return { id: u.id, page: firstUndonePage(u), label: '第' + ch.no + '章 ' + u.title };
     }
     return null;
   }
@@ -196,196 +205,76 @@ b.key { color:var(--key); font-weight:800; }
   // ---------- セッション（1画面 = 1ページ） ----------
   var PAGES_PER_BREAK = 6;
   function pageIdx(l, page) { page = parseInt(page, 10); return page >= 0 && page < l.pages.length ? page : 0; }
-  function openLesson(id, page, keepDone) {
+  function openLesson(id, page) {
     var c = chapterOfLesson[id], l = lessonById[id], pg = pageIdx(l, page);
-    P.position = { ch: c.no, lessonId: id, page: pg }; save();
-    go({ name: 'lesson', id: id, page: pg, step: 'read', qi: 0, picked: null, right: 0, quizDone: keepDone || {} });
+    P = L.setPosition(P, { ch: c.no, lessonId: id, page: pg }); save();
+    go({ name: 'lesson', id: id, page: pg });
   }
-  function pageQs(pg) { return pg.oxIds.map(function (id) { return qById[id]; }).filter(Boolean).map(function (x) { return x.q; }); }
   function lessonView() {
     var v = view, l = lessonById[v.id], c = chapterOfLesson[v.id], pg = l.pages[v.page], n = l.pages.length;
-    var qs = pageQs(pg), idx = c.lessons.indexOf(l);
-    var h = '<div class="mute">第' + c.no + '章 ' + esc(l.title) + ' ・ ページ ' + (v.page + 1) + '/' + n + '</div>';
+    var idx = c.lessons.indexOf(l), tried = L.isPageDone(P, pg.id), s = L.lessonStats(P, l);
+    var h = '<div class="mute">第' + c.no + '章 ' + esc(l.title) + ' ・ ページ ' + (v.page + 1) + '/' + n + '（試した ' + s.done + '/' + s.total + '）</div>';
     h += '<div class="pbar"><div style="width:' + Math.round((v.page + 1) * 100 / n) + '%"></div></div>';
     h += '<h1>' + esc(pg.title) + '</h1>';
-    if (v.step === 'quiz') return h + lessonQuizHtml(pg, qs);
-    h += '<div class="card lesson">' + pg.html + '</div><p>' + reportBtn(pg.id) + '</p>';
-    var qd = v.quizDone[pg.id];
-    if (qs.length && qd) h += '<p class="mute">確認クイズ: ' + qd.right + '/' + qd.total + '問正解 <button class="small sub" data-act="page-quiz">もう一度挑戦</button></p>';
-    h += '<div class="nav"><button class="sub" data-act="page-prev"' + (v.page === 0 ? ' disabled' : '') + '>前へ</button>';
-    if (qs.length && !qd) h += '<button data-act="page-quiz">次へ（確認クイズ ' + qs.length + '問）</button>';
-    else h += '<button data-act="page-next">' + (v.page + 1 < n ? '次へ' : (idx + 1 < c.lessons.length ? '次へ（このレッスンを終える）' : '次へ（章の終わりへ）')) + '</button>';
-    return h + '</div><button class="sub small" data-act="home">ホームへ（位置は保存済み）</button>';
+    h += '<div class="card lesson">' + decorate(pg.html) + '</div>';
+    h += '<div class="tried' + (tried ? ' on' : '') + '"><button class="' + (tried ? '' : 'sub') + '" data-act="page-toggle">' + (tried ? '✓ このページを試した' : 'このページを試した') + '</button>' +
+      '<span class="mute">' + (tried ? '記録済み（もう一度押すと取り消し）' : '手順を実際に試したら押してください') + '</span></div>';
+    h += '<p>' + reportBtn(pg.id) + '</p>';
+    h += '<div class="nav"><button class="sub" data-act="page-prev"' + (v.page === 0 && idx === 0 ? ' disabled' : '') + '>前へ</button>';
+    h += '<button data-act="page-next">' + (v.page + 1 < n ? '次へ' : (idx + 1 < c.lessons.length ? '次のレッスンへ' : '章の終わりへ')) + '</button></div>';
+    return h + '<button class="sub small" data-act="home">ホームへ（位置は保存済み）</button>';
   }
-  function lessonQuizHtml(pg, qs) {
-    var v = view, q = qs[v.qi], answered = v.picked !== null, kind = 'ox';
-    var h = '<div class="mute">確認クイズ ' + (v.qi + 1) + ' / ' + qs.length + '</div><div class="card">' + renderQ(q, kind, v.picked, answered);
-    if (answered) {
-      var ok = L.gradeOx(q, v.picked).correct;
-      h += '<h3 class="' + (ok ? 'ok' : 'ng') + '">' + (ok ? '正解' : '不正解') + '（正解: ' + (q.answer ? '○' : '×') + '）</h3><div class="explain">' + explainHtml(q, kind) + '</div><p>' + reportBtn(q.id) + '</p>';
-    }
-    h += '</div><details><summary class="mute">本文を読み返す</summary><div class="card lesson">' + pg.html + '</div></details>';
-    h += '<div class="nav"><button class="sub" data-act="quiz-back">前へ（本文に戻る）</button>';
-    if (answered) h += '<button data-act="quiz-next">' + (v.qi + 1 < qs.length ? '次の問題へ' : '次へ') + '</button>';
-    return h + '</div>';
+  function togglePage() {
+    var pg = lessonById[view.id].pages[view.page];
+    P = L.markPage(P, DATA, pg.id, !L.isPageDone(P, pg.id)); save();
+    var y = window.scrollY; render(); window.scrollTo(0, y);
   }
-  function lessonPick(val) {
-    var v = view, pg = lessonById[v.id].pages[v.page], q = pageQs(pg)[v.qi];
-    if (v.picked !== null) return;
-    val = val === 'true';
-    var ok = L.gradeOx(q, val).correct;
-    v.picked = val; if (ok) v.right++;
-    recordAnswer(q.id, ok); save(); render();
-  }
-  function quizNext() {
-    var v = view, pg = lessonById[v.id].pages[v.page], qs = pageQs(pg);
-    if (v.qi + 1 < qs.length) { v.qi++; v.picked = null; render(); window.scrollTo(0, 0); return; }
-    v.quizDone[pg.id] = { right: v.right, total: qs.length };
-    advance();
-  }
-  // 「次へ」：最後のページならレッスン完了。6ページごとに区切りを出す
-  function advance() {
-    var v = view, l = lessonById[v.id], c = chapterOfLesson[v.id], i = v.page, tgt;
+  function pageNext() {
+    var v = view, l = lessonById[v.id], c = chapterOfLesson[v.id], i = v.page, idx = c.lessons.indexOf(l), tgt;
     sessionPages++;
     if (i + 1 < l.pages.length) tgt = { id: l.id, page: i + 1 };
-    else {
-      if (!isDone(l.id)) P.lessonsDone.push(l.id);
-      var nx = firstUndone(c);
-      tgt = nx ? { id: nx.id, page: 0 } : { end: c.no };
-    }
-    if (tgt.id) P.position = { ch: c.no, lessonId: tgt.id, page: tgt.page };
-    save();
+    else if (idx + 1 < c.lessons.length) tgt = { id: c.lessons[idx + 1].id, page: 0 };
+    else tgt = { end: c.no };
+    if (tgt.id) { var c2 = chapterOfLesson[tgt.id]; P = L.setPosition(P, { ch: c2.no, lessonId: tgt.id, page: tgt.page }); save(); }
     if (sessionPages % PAGES_PER_BREAK === 0) go({ name: 'break', tgt: tgt });
-    else runTarget(tgt, v.quizDone);
+    else runTarget(tgt);
   }
-  function runTarget(t, qd) {
-    if (t.id) openLesson(t.id, t.page, t.id === view.id ? qd : {});
+  function pagePrev() {
+    var v = view, l = lessonById[v.id], c = chapterOfLesson[v.id], idx = c.lessons.indexOf(l);
+    if (v.page > 0) openLesson(v.id, v.page - 1);
+    else if (idx > 0) { var pl = c.lessons[idx - 1]; openLesson(pl.id, pl.pages.length - 1); }
+  }
+  function runTarget(t) {
+    if (t.id) openLesson(t.id, t.page);
     else go({ name: 'chapterend', ch: t.end });
   }
   function breakView() {
     var t = view.tgt;
-    return '<h1>ここまで読みました</h1><div class="card"><p>進捗は保存されています。区切りがよければ今日はここまでにできます。</p></div>' +
+    return '<h1>ここまで読みました</h1><div class="card"><p>進捗は保存されています。区切りがよければ今日はここまでにできます。Keycloak は <code>docker compose down</code> で止められます（データは残ります。<code>-v</code> を付けると消えます）。</p></div>' +
       '<button data-act="break-go">' + (t.id ? '続ける' : '章の終わりへ') + '</button>' +
       '<button class="sub" data-act="home">今日はここまで</button>';
   }
   function chapterEndView() {
-    var c = chapter(view.ch), t = P.chapterTest[c.no];
-    return '<h1>第' + c.no + '章 のレッスンはすべて完了</h1><div class="card"><p>章末テストで理解度を確認しましょう（正答率 ' + Math.round(P.settings.passRate * 100) + '% 以上でクリア、次章が開きます）。</p>' +
-      (t ? '<p class="mute">前回: ' + Math.round(t.score * 100) + '%' + (t.passed ? '（クリア）' : '（もう一歩）') + '</p>' : '') + '</div>' +
-      '<button data-act="chapter-test" data-ch="' + c.no + '"' + (c.mc.length ? '' : ' disabled') + '>章末テストへ</button><button class="sub" data-act="home">ホームへ</button>';
-  }
-
-  // ---------- 章末テスト ----------
-  function startChapterTest(no) {
-    var c = chapter(no);
-    startRun(c.mc.map(function (q) { return q.id; }), {
-      title: '第' + no + '章 章末テスト',
-      onDone: function (s) {
-        var rate = s.total ? s.right / s.total : 0;
-        var prev = P.chapterTest[no];
-        var passed = rate >= P.settings.passRate;
-        P.chapterTest[no] = { score: (prev && prev.passed && !passed) ? Math.max(prev.score, rate) : rate, passed: passed || !!(prev && prev.passed) };
-        save();
-        go({ name: 'ctresult', ch: no, s: s, rate: rate, passed: passed });
-      }
-    });
-  }
-  function ctResultView() {
-    var v = view, nextC = chapter(v.ch + 1);
-    return '<h1>第' + v.ch + '章 章末テスト 結果</h1><div class="card"><p>' + v.s.total + '問中 ' + v.s.right + '問正解（' + Math.round(v.rate * 100) + '%）</p>' +
-      '<h2 class="' + (v.passed ? 'ok' : 'ng') + '">' + (v.passed ? 'クリア' : 'もう一歩（基準 ' + Math.round(P.settings.passRate * 100) + '%）') + '</h2>' +
-      (v.passed ? (nextC ? '<p>第' + nextC.no + '章が開きました。</p>' : '<p>全章の学習が完了しました。</p>') : '<p>レッスンを見直してもう一度挑戦できます。次の章はロックのままです。</p>') + '</div>' +
-      '<button data-act="home">ホームへ</button><button class="sub" data-act="chapter-test" data-ch="' + v.ch + '">もう一度</button>';
-  }
-
-  // ---------- 復習 ----------
-  function startReview() {
-    var ids = P.wrongLog.filter(function (id) { return qById[id]; });
-    startRun(ids, {
-      title: '復習（間違えた問題）',
-      onDone: function (s) { go({ name: 'simple', title: '復習 結果', body: '<p>' + s.total + '問中 ' + s.right + '問正解。正解した問題は復習リストから外れました。</p>' }); }
-    });
-  }
-
-  // ---------- 総合理解チェック ----------
-  function startExam() {
-    var ex = L.buildExam(DATA);
-    go({ name: 'exam', exam: ex, answers: {}, t0: Date.now(), result: null });
-    tickTimer();
-  }
-  var timerHandle = null;
-  function tickTimer() {
-    if (timerHandle) clearInterval(timerHandle);
-    timerHandle = setInterval(function () {
-      var el = document.getElementById('timer');
-      if (!el || view.name !== 'exam' || view.result) { clearInterval(timerHandle); timerHandle = null; return; }
-      el.textContent = fmtTime(Date.now() - view.t0);
-    }, 1000);
-  }
-  function fmtTime(ms) { var s = Math.floor(ms / 1000); return Math.floor(s / 60) + '分' + ('0' + s % 60).slice(-2) + '秒'; }
-  function examView() {
-    var v = view, ex = v.exam;
-    if (v.result) return examResultView();
-    var h = '<h1>総合理解チェック</h1><div class="card">○×' + ex.ox.length + '問（各' + OX_PT + '点）＋五肢選択' + ex.mc.length + '問（各' + MC_PT + '点）。目安は ' + examPassPct() + '% 以上です。時間制限はありません。未回答は0点です。<br>経過時間（参考） <b id="timer">' + fmtTime(Date.now() - v.t0) + '</b></div>';
-    var n = 0;
-    ex.ox.forEach(function (q) {
-      n++; var a = v.answers[q.id];
-      h += '<div class="card"><div class="mute">問' + n + '（○×）</div><div class="q">' + q.text + '</div>';
-      [[true, '○'], [false, '×']].forEach(function (p) { h += '<button class="choice' + (a === p[0] ? ' sel' : '') + '" style="width:48%;text-align:center" data-act="exam-pick" data-id="' + q.id + '" data-v="' + p[0] + '">' + p[1] + '</button>'; });
-      h += '</div>';
-    });
-    ex.mc.forEach(function (q) {
-      n++; var a = v.answers[q.id];
-      h += '<div class="card"><div class="mute">問' + n + '（五肢選択）</div>' + '<div class="q">' + q.stem + '</div><div class="items">' + q.items.map(function (it) { return '<p>' + esc(it.label) + '　' + it.text + '</p>'; }).join('') + '</div>';
-      q.choices.forEach(function (c, k) { h += '<button class="choice' + (a === k + 1 ? ' sel' : '') + '" data-act="exam-pick" data-id="' + q.id + '" data-v="' + (k + 1) + '">' + (k + 1) + '. ' + esc(c) + '</button>'; });
-      h += '</div>';
-    });
-    var answered = Object.keys(v.answers).length;
-    return h + '<p class="mute">回答済み ' + answered + ' / ' + n + '</p><button data-act="exam-submit">採点する</button><button class="sub" data-act="home">中断してホームへ</button>';
-  }
-  function examResultView() {
-    var v = view, r = v.result, h = '<h1>総合理解チェック 結果</h1><div class="card"><h2 class="' + (r.pass ? 'ok' : 'ng') + '">' + r.points + ' / ' + r.max + '点　' + (r.pass ? '目安ライン到達' : '目安ライン（' + examPassPct() + '%）未満') + '</h2>所要時間（参考） ' + fmtTime(v.elapsed) + '</div>';
-    h += '<div class="card"><h2>章別の理解度</h2>';
-    Object.keys(r.byChapter).sort(function (a, b) { return a - b; }).forEach(function (k) {
-      var b = r.byChapter[k], c = chapter(parseInt(k, 10));
-      h += '<div class="chap"><div>第' + k + '章 ' + esc(c ? c.title : '') + '</div><div>' + b.correct + ' / ' + b.total + '（' + Math.round(b.correct * 100 / b.total) + '%）</div></div>';
-    });
-    h += '</div><div class="card"><h2>間違えた問題・未回答</h2>';
-    var any = false;
-    v.exam.ox.concat(v.exam.mc).forEach(function (q) {
-      var a = v.answers[q.id], kind = q.stem !== undefined ? 'mc' : 'ox';
-      var ok = a !== undefined && (kind === 'ox' ? L.gradeOx(q, a) : L.gradeMc(q, a)).correct;
-      if (ok) return; any = true;
-      h += '<div class="explain"><div class="q">' + (kind === 'ox' ? q.text : q.stem) + '</div><p class="ng">あなたの回答: ' + (a === undefined ? '未回答' : (kind === 'ox' ? (a ? '○' : '×') : a + '番')) + '　正解: ' + (kind === 'ox' ? (q.answer ? '○' : '×') : q.answer + '番') + '</p>' + explainHtml(q, kind) + '<p>' + reportBtn(q.id) + '</p></div>';
-    });
-    if (!any) h += '<p>全問正解です。</p>';
-    return h + '</div><button data-act="home">ホームへ</button><button class="sub" data-act="exam">もう一度</button>';
-  }
-  function submitExam() {
-    var v = view, r = L.scoreExam(v.exam, v.answers);
-    v.exam.ox.concat(v.exam.mc).forEach(function (q) {
-      var kind = q.stem !== undefined ? 'mc' : 'ox', a = v.answers[q.id];
-      var ok = a !== undefined && (kind === 'ox' ? L.gradeOx(q, a) : L.gradeMc(q, a)).correct;
-      recordAnswer(q.id, ok);
-    });
-    save();
-    v.result = r; v.elapsed = Date.now() - v.t0; render(); window.scrollTo(0, 0);
+    var c = chapter(view.ch), nextC = chapter(view.ch + 1);
+    var left = c.lessons.filter(function (l) { return !isDone(l.id); }).length;
+    return '<h1>第' + c.no + '章 の最後まで来ました</h1><div class="card"><p>' +
+      (left ? '「このページを試した」が付いていないページが残っているレッスンが ' + left + ' 個あります。ホームの章一覧から続きを選べます。' : 'すべてのページを試しました。') + '</p></div>' +
+      (nextC ? '<button data-act="chapter-start" data-ch="' + nextC.no + '">第' + nextC.no + '章へ進む</button>' : '') +
+      '<button class="sub" data-act="home">ホームへ</button>';
   }
 
   // ---------- 間違いメモ / 設定 ----------
   function reportsView() {
     var h = '<h1>間違いメモ</h1><div class="card">';
-    if (!P.reports.length) h += '<p class="mute">まだありません。レッスンや問題の「間違いをメモ」から追加できます。</p>';
+    if (!P.reports.length) h += '<p class="mute">まだありません。ページの「記述の間違いをメモ」から追加できます。</p>';
     P.reports.forEach(function (r, i) {
       h += '<div class="chap"><div><span class="mute">' + esc(r.id) + '</span><br>' + esc(r.memo) + '</div><button class="small sub" data-act="report-del" data-i="' + i + '">削除</button></div>';
     });
     return h + '</div><button data-act="export-reports"' + (P.reports.length ? '' : ' disabled') + '>メモを書き出す</button><button class="sub" data-act="home">ホームへ</button>';
   }
   function settingsView() {
-    var s = P.settings;
-    return '<h1>設定</h1><div class="card"><h2>章末テストのクリア基準</h2><label>正答率 <input type="number" id="passRate" min="10" max="100" step="5" value="' + Math.round(s.passRate * 100) + '" style="width:5em;font:inherit"> %</label> <button class="small" data-act="set-pass">変更</button></div>' +
-      '<div class="card"><h2>全章を開放</h2><p class="mute">章のロックと総合理解チェックのロックを解除します。</p><label><input type="checkbox" id="unlockAll"' + (s.unlockAll ? ' checked' : '') + '> 全章を開放する</label> <button class="small" data-act="set-unlock">反映</button></div>' +
-      '<div class="card"><h2>進捗のバックアップ</h2><button data-act="export">進捗JSONを書き出す</button><p><input type="file" id="importFile" accept=".json,application/json"></p><button class="sub" data-act="import">読み込む</button></div>' +
+    return '<h1>設定</h1>' +
+      '<div class="card"><h2>進捗のバックアップ</h2><button data-act="export">進捗JSONを書き出す</button><p><input type="file" id="importFile" accept=".json,application/json"></p><button class="sub" data-act="import">読み込む</button><p class="mute">旧形式（version 1）の進捗JSONも読み込めます。</p></div>' +
       '<div class="card"><h2>進捗の消去</h2><button class="sub" data-act="reset">すべて消去</button></div>' +
       '<button class="sub" data-act="home">ホームへ</button>';
   }
@@ -406,14 +295,10 @@ b.key { color:var(--key); font-weight:800; }
     var n = view.name;
     if (n === 'home') h += homeView();
     else if (n === 'lesson') h += lessonView();
-    else if (n === 'run') h += renderRun();
-        else if (n === 'break') h += breakView();
+    else if (n === 'break') h += breakView();
     else if (n === 'chapterend') h += chapterEndView();
-    else if (n === 'ctresult') h += ctResultView();
-    else if (n === 'exam') h += examView();
     else if (n === 'reports') h += reportsView();
     else if (n === 'settings') h += settingsView();
-    else if (n === 'simple') h += '<h1>' + esc(view.title) + '</h1><div class="card">' + view.body + '</div><button data-act="home">ホームへ</button>';
     root.innerHTML = h;
   }
 
@@ -424,40 +309,31 @@ b.key { color:var(--key); font-weight:800; }
     switch (act) {
       case 'home': go({ name: 'home' }); break;
       case 'continue': { var c = continueTarget(); if (c) openLesson(c.id, c.page); break; }
-      case 'chapter-start': { var ch = chapter(parseInt(d.ch, 10)); var u = firstUndone(ch); if (u) openLesson(u.id, P.position && P.position.lessonId === u.id ? P.position.page || 0 : 0); else if (ch.lessons.length) openLesson(ch.lessons[0].id); break; }
-      case 'chapter-test': startChapterTest(parseInt(d.ch, 10)); break;
-      case 'page-prev': if (view.page > 0) openLesson(view.id, view.page - 1, view.quizDone); break;
-      case 'page-next': advance(); break;
-      case 'page-quiz': view.step = 'quiz'; view.qi = 0; view.picked = null; view.right = 0; render(); window.scrollTo(0, 0); break;
-      case 'quiz-back': view.step = 'read'; render(); window.scrollTo(0, 0); break;
-      case 'quiz-next': quizNext(); break;
-      case 'break-go': runTarget(view.tgt, {}); break;
-      case 'pick': if (view.name === 'lesson') lessonPick(d.v); else runPick(d.v); break;
-      case 'run-next': runNext(); break;
-      case 'run-quit': go({ name: 'home' }); break;
-      case 'run-finish': go({ name: 'home' }); break;
-      case 'review': startReview(); break;
-      case 'exam': startExam(); break;
-      case 'exam-pick': {
-        var v = d.v, val = v === 'true' ? true : v === 'false' ? false : parseInt(v, 10);
-        view.answers[d.id] = val; var y = window.scrollY; render(); window.scrollTo(0, y); break;
+      case 'chapter-start': {
+        var ch = chapter(parseInt(d.ch, 10)); if (!ch) break;
+        var u = firstUndone(ch);
+        if (u) openLesson(u.id, P.position && P.position.lessonId === u.id ? P.position.page || 0 : firstUndonePage(u));
+        else if (ch.lessons.length) openLesson(ch.lessons[0].id, 0);
+        break;
       }
-      case 'exam-submit': submitExam(); break;
+      case 'page-prev': pagePrev(); break;
+      case 'page-next': pageNext(); break;
+      case 'page-toggle': togglePage(); break;
+      case 'break-go': runTarget(view.tgt); break;
+      case 'copy': {
+        var wrap = t.parentNode, pre = wrap && wrap.querySelector('pre');
+        if (pre) copyText(pre.textContent, t);
+        break;
+      }
       case 'report': {
         var memo = window.prompt('どこが間違いだと思いますか?（メモ）\n対象: ' + d.id, '');
-        if (memo !== null && memo.trim()) { P.reports.push({ id: d.id, memo: memo.trim(), ts: Date.now() }); save(); notice = 'メモを保存しました（' + d.id + '）。'; var yy = window.scrollY; render(); window.scrollTo(0, yy); }
+        if (memo !== null && memo.trim()) { P = L.addReport(P, d.id, memo.trim(), Date.now()); save(); notice = 'メモを保存しました（' + d.id + '）。'; var yy = window.scrollY; render(); window.scrollTo(0, yy); }
         break;
       }
       case 'reports': go({ name: 'reports' }); break;
-      case 'report-del': P.reports.splice(parseInt(d.i, 10), 1); save(); render(); break;
+      case 'report-del': P = L.removeReport(P, parseInt(d.i, 10)); save(); render(); break;
       case 'export-reports': download('keycloak-taizen-reports-' + stamp() + '.json', JSON.stringify(P.reports, null, 2)); break;
       case 'settings': go({ name: 'settings' }); break;
-      case 'set-pass': {
-        var pr = parseInt(document.getElementById('passRate').value, 10);
-        if (pr >= 10 && pr <= 100) { P.settings.passRate = pr / 100; save(); notice = 'クリア基準を ' + pr + '% にしました。'; } else notice = '10〜100 の数値を入れてください。';
-        render(); break;
-      }
-      case 'set-unlock': P.settings.unlockAll = document.getElementById('unlockAll').checked; save(); notice = P.settings.unlockAll ? '全章を開放しました。' : '開放を解除しました。'; render(); break;
       case 'export': download('keycloak-taizen-progress-' + stamp() + '.json', JSON.stringify(P, null, 2)); break;
       case 'import': {
         var f = document.getElementById('importFile').files[0];
@@ -466,7 +342,7 @@ b.key { color:var(--key); font-weight:800; }
         fr.onload = function () {
           var res = L.importProgress(String(fr.result), P);
           if (res.error) notice = '読み込めませんでした: ' + res.error + '（現在の進捗は変更していません）';
-          else { P = res.progress; save(); notice = '進捗を読み込みました。'; }
+          else { P = L.syncLessons(res.progress, DATA, res.migrated); save(); notice = '進捗を読み込みました。'; }
           render();
         };
         fr.readAsText(f); break;
@@ -476,7 +352,7 @@ b.key { color:var(--key); font-weight:800; }
   });
 
   // 起動時：保存された位置のレッスンを開く（ホームから「続きから」でも可）
-  if (P.position && lessonById[P.position.lessonId] && !isDone(P.position.lessonId) && L.isChapterUnlocked(P, P.position.ch)) {
+  if (P.position && lessonById[P.position.lessonId] && !isDone(P.position.lessonId)) {
     openLesson(P.position.lessonId, P.position.page || 0);
   }
   render();
